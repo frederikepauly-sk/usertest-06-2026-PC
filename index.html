@@ -1,1313 +1,308 @@
-<!doctype html>
-<html lang="de">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Symptom-Kompass</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: #F5EFF1;
-    min-height: 100vh;
-    font-family: 'Mulish', -apple-system, system-ui, sans-serif;
-    color: #181818;
-  }
-  body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 32px 16px;
-    background:
-      radial-gradient(1200px 600px at 50% -100px, #FFE7F0 0%, transparent 60%),
-      linear-gradient(180deg, #FAF5F8 0%, #EDE3E9 100%);
-  }
-  #root {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  ::-webkit-scrollbar { width: 0; height: 0; }
-  * { -webkit-tap-highlight-color: transparent; }
-  input::placeholder { color: #4C6284; }
-  button { font-family: inherit; }
-  @media (max-width: 520px) {
-    body { padding: 0; display: block; background: #fff; }
-    #root { display: block; }
-    input, select, textarea { font-size: 16px !important; }
-  }
-  @media (min-width: 521px) {
-    html, body { height: 100%; overflow: hidden; }
-    body { box-sizing: border-box; }
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Under Construction</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #fdf0f5;
+      --warm-white: #fff5f9;
+      --terracotta: #d4607a;
+      --terracotta-light: #e8899e;
+      --brown: #7a2d45;
+      --brown-light: #b05470;
+      --text: #3d1f2b;
+      --text-muted: #b07a8e;
+      --sand: #f5d0dc;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Background blobs */
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.35;
+    }
+
+    .blob-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #f2b8cb, #e07090);
+      top: -120px; left: -100px;
+      animation: drift1 12s ease-in-out infinite alternate;
+    }
+
+    .blob-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #fcd5e2, #e8899e);
+      bottom: -80px; right: -80px;
+      animation: drift2 15s ease-in-out infinite alternate;
+    }
+
+    .blob-3 {
+      width: 250px; height: 250px;
+      background: radial-gradient(circle, #fce8f0, #d4607a);
+      top: 40%; left: 60%;
+      animation: drift3 10s ease-in-out infinite alternate;
+    }
+
+    @keyframes drift1 { to { transform: translate(40px, 30px); } }
+    @keyframes drift2 { to { transform: translate(-30px, -40px); } }
+    @keyframes drift3 { to { transform: translate(-20px, 20px); } }
+
+    /* Grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      background-size: 200px;
+      opacity: 0.5;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Card */
+    .card {
+      position: relative;
+      z-index: 2;
+      background: rgba(255, 250, 244, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(201, 123, 75, 0.2);
+      border-radius: 28px;
+      padding: 64px 72px;
+      max-width: 580px;
+      width: 90%;
+      text-align: center;
+      box-shadow:
+        0 4px 32px rgba(107, 66, 38, 0.08),
+        0 1px 0 rgba(255,255,255,0.8) inset;
+      animation: fadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Icon */
+    .icon-wrap {
+      width: 72px; height: 72px;
+      background: linear-gradient(135deg, var(--terracotta-light), var(--terracotta));
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 28px;
+      box-shadow: 0 8px 24px rgba(201, 123, 75, 0.3);
+      animation: fadeUp 0.9s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .icon-wrap svg {
+      width: 36px; height: 36px;
+      stroke: #fff;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Heading */
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-weight: 300;
+      font-size: 2.6rem;
+      line-height: 1.15;
+      color: var(--brown);
+      margin-bottom: 16px;
+      animation: fadeUp 0.9s 0.15s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--terracotta);
+    }
+
+    /* Subtitle */
+    p.subtitle {
+      font-size: 1.05rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 40px;
+      animation: fadeUp 0.9s 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    /* Progress bar */
+    .progress-wrap {
+      margin-bottom: 40px;
+      animation: fadeUp 0.9s 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--sand);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--terracotta-light), var(--terracotta));
+      border-radius: 99px;
+      transition: width 2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Divider */
+    .divider {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px;
+      animation: fadeUp 0.9s 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1;
+      height: 1px; background: var(--sand);
+    }
+    .divider span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* Email form */
+    .notify-form {
+      display: flex;
+      gap: 10px;
+      animation: fadeUp 0.9s 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .notify-form input {
+      flex: 1;
+      padding: 13px 18px;
+      border: 1.5px solid var(--sand);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.7);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .notify-form input::placeholder { color: var(--text-muted); }
+    .notify-form input:focus { border-color: var(--terracotta-light); }
+
+    .notify-form button {
+      padding: 13px 22px;
+      background: linear-gradient(135deg, var(--terracotta-light), var(--terracotta));
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s, transform 0.15s;
+      box-shadow: 0 4px 16px rgba(201, 123, 75, 0.3);
+    }
+
+    .notify-form button:hover { opacity: 0.9; transform: translateY(-1px); }
+    .notify-form button:active { transform: translateY(0); }
+
+    .success-msg {
+      display: none;
+      color: var(--terracotta);
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-top: 12px;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    /* Footer note */
+    .footer-note {
+      margin-top: 40px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      animation: fadeUp 0.9s 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    /* Replace markers */
+    .replace {
+      background: rgba(201,123,75,0.12);
+      border-radius: 4px;
+      padding: 0 4px;
+      font-style: normal;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-<div id="root"></div>
 
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <div class="bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
 
-<!-- ── data ─────────────────────────────────────────────────────────────── -->
-<script>
-// ── Hilfsfunktionen ────────────────────────────────────────────────────────
-function _id(name) {
-  return name.toLowerCase()
-    .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss')
-    .replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
-}
+  <div class="card">
 
-function _aliases(s1, s2) {
-  return (s1 + ',' + s2).split(',').map(s => s.trim().toLowerCase()).filter(s => s.length > 1);
-}
-
-// ── Feste zweite Frage (gilt für alle Symptome) ────────────────────────────
-const TREATMENT_Q = {
-  q: "Erhalten Sie eine der folgenden Behandlungen?",
-  options: [
-    { key: "her2",  label: "anti-HER2 Antikörper",           desc: "Trastuzumab/Herceptin oder Pertuzumab/Perjeta" },
-    { key: "cdk",   label: "CDK4/6i Abemaciclib (Verzenios)", desc: "CDK4/6-Hemmer" },
-    { key: "chemo", label: "Chemotherapie",                   desc: "Klassische Zytostatika" },
-    { key: "none",  label: "Keine der genannten Medikamente", desc: "Andere oder keine aktive Therapie" },
-  ],
-};
-
-// Maskulina → "Ihren", Neutra → "Ihr", alles andere → "Ihre"
-const _MASCULINE = new Set([
-  'haarausfall', 'katarakt_grauer_star', 'schuettelfrost', 'husten', 'durchfall',
-  'hautausschlag', 'hoher_blutdruck', 'niedriger_blutdruck',
-  'verlust_der_fingernaegel_oder_zehennaegel',
-  'juckreiz', 'tinnitus', 'vaginaler_ausfluss', 'schwindel', 'gewichtsverlust'
-]);
-const _NEUTER = new Set([
-  'verschwommenes_sehen', 'schwindelgefuehl', 'nasenbluten', 'fieber',
-  'generalisiertes_oedem', 'schwitzen', 'allgemeines_unwohlsein',
-  'hand_fuss_syndrom', 'herzklopfen', 'kribbeln', 'herzrasen',
-  'behandlungsbedingtes_sekundaeres_malignom', 'erbrechen'
-]);
-
-function _severityQ(name) {
-  const id = _id(name);
-  const poss = _MASCULINE.has(id) ? 'Ihren' : _NEUTER.has(id) ? 'Ihr' : 'Ihre';
-  return {
-    q: "Wie würden Sie " + poss + " " + name + " einschätzen?",
-    options: [
-      { key: "mild",     label: "Leicht",  desc: "Spürbar, beeinträchtigt den Alltag kaum" },
-      { key: "moderate", label: "Mäßig",   desc: "Schränkt Aktivitäten ein, aber ich komme zurecht" },
-      { key: "severe",   label: "Stark",   desc: "Deutliche Beeinträchtigung des Alltags" },
-    ],
-  };
-}
-
-const SEVERITY_LABEL = { mild:"Leicht", moderate:"Mäßig", severe:"Stark" };
-const TREATMENT_LABEL = {
-  her2:"anti-HER2 Antikörper", cdk:"CDK4/6i Abemaciclib",
-  chemo:"Chemotherapie",       none:"Keine der genannten",
-};
-
-function _result(name) {
-  return {
-    contextLabel: ({ a }) =>
-      (SEVERITY_LABEL[a[0]] || "Mäßig") + " · " + (TREATMENT_LABEL[a[1]] || ""),
-    summary: name + " können im Rahmen der Brustkrebstherapie auftreten. Die Ursachen und der beste Umgang damit hängen oft von Ihrer aktuellen Behandlung ab.",
-    sections: [
-      { heading: "Was Sie tun können", body: "Beobachten Sie, wann und wie stark die Beschwerden auftreten, und halten Sie diese schriftlich fest. Kleine Anpassungen im Alltag können oft helfen." },
-      { heading: "Mit dem Behandlungsteam sprechen", body: "Informieren Sie Ihr Behandlungsteam über Ihre Beschwerden. Gemeinsam können Sie die Ursache klären und geeignete Maßnahmen besprechen." },
-      { heading: "Wann ärztlich abklären?", body: "Wenn die Beschwerden stark zunehmen, plötzlich auftreten oder mit anderen Symptomen einhergehen, wenden Sie sich bitte umgehend an Ihr Behandlungsteam." },
-    ],
-    suggested: [
-      { tag: "Mini-Lektion", title: name + " – was steckt dahinter?", minutes: 4 },
-    ],
-  };
-}
-
-// ── Rohdaten aus synonyme.csv (Spalte 1 = Name, 2+3 = Synonyme) ───────────
-const RAW = [
-  ["Bauchschmerzen","Blähungen, Völlegefühl, Magenschmerzen, Darmschmerzen, Magendrücken, Bauchweh, Bauchkrämpfe","Bauchkrampf, Leibschmerzen, Kolik, Verdauungsschmerzen, Druckgefühl Bauch, Bauchgrummeln, Oberbauchschmerzen"],
-  ["Haarausfall","Haarverlust, Haare fallen aus, Glatze","Kahlheit, Haarverdünnung, Alopezie, dünne Haare, kreisrunder Haarausfall, brüchige Haare"],
-  ["Appetitlosigkeit","Appetitverlust, nichts essen, Gewichtsverlust, Anorexie, Inappetenz, Anorexia","Appetitmangel, Hungerverlust, Nahrungsverweigerung, Essunlust, Kein Hunger, kein Appetit"],
-  ["Angststörungen oder Nervosität","Angstgefühl, Panikattacken, Angststörung, Nervösität","Angstkrankheit, Furcht, Neurose, Panik, Trostlosigkeit, Traurigkeit, Beklemmung, Sorge, Unruhe, Besorgnis, Anspannung, Aufgeregtheit, Zittrigkeit, Reizbarkeit, Angespanntheit, Ruhelosigkeit"],
-  ["Gelenkschmerzen","Gliederschmerzen, Rheuma, Arthritis, Knieschmerzen, Fußschmerzen, Schulterschmerzen","Fußgelenkschmerzen, Gelenksteifigkeit, Gelenkbeschwerden, Morgensteifigkeit, Anlaufschwierigkeiten, Gelenkentzündung"],
-  ["Rückenschmerzen","Hexenschuss, Kreuzschmerzen","Rückenbeschwerden, Lumbalgie, Verspannungen Rücken, Rückenprobleme, Bandscheibenprobleme"],
-  ["Verschwommenes Sehen","Verschwommene Sicht, Getrübte Sicht, Trübe Sicht, Unschärfe, Unklarheit","Eingeschränktes Sehen, Schleier, Nebel"],
-  ["Knochenschmerzen","Gliederschmerzen","Knochenbeschwerden, Ostealgie, Knochendruckschmerz, Knochenziehen, Skelettbeschwerden"],
-  ["Katarakt (Grauer Star)","getrübtes Sehen, trübes Sehen, schlecht sehen, unscharf sehen, Linsentrübung","Augenstar, Seheneintrübung"],
-  ["Herzbedingte Brustschmerzen","Engegefühl, Angina","Beklemmungsgefühl, Herzkrampf, Brustenge, Brustdruck, Brustbeklemmung, Druck Brust"],
-  ["Schüttelfrost","Kältegefühl, Zittern, Zähneklappern, Zähne klappern","Frösteln, Kälteempfinden, Schlottern, Beben, Erzittern, Muskelzittern, Kältezittern"],
-  ["Konzentrationsstörungen","nicht konzentrieren, Aufmerksamkeitsstörungen, unaufmerksam, nicht denken","Konzentrationsprobleme, Vergesslichkeit, Konzentrationsschwäche, Ablenkbarkeit, Zerstreutheit"],
-  ["Bindehautentzündung","rotes Auge, juckendes Auge, Auge juckt, tränende Augen, Fremdkörpergefühl im Auge, verklebte Augen","Eiter Auge"],
-  ["Verstopfung","Obstipation","harter Stuhlgang, seltener Stuhlgang, Stuhlverhalt, träger Stuhl, träger Darm"],
-  ["Husten","Hustenreiz, trockener Husten","Hustendrang, Hustenanfall, Räuspern, Hustenreflex"],
-  ["Depression","schwere Niedergeschlagenheit, Betrübtheit, Traurigkeit, Antriebslosigkeit, Freudlosigkeit, depressiv, Niedergeschlagenheit","Schwermut, Melancholie, Mutlosigkeit, Trübsinn, seelisches Tief, Lebensunlust, Beklommenheit"],
-  ["Durchfall","Diarrhoe, Diarrhö, häufige flüssige Stuhlentleerungen, willkürlicher Stuhlabgang","Darmkatarrh, flüssiger Stuhlgang, Magen-Darm-Verstimmung, breiiger Stuhl, Magen-Darm-Infekt, wässriger Stuhl"],
-  ["Schwindelgefühl","schwindlig",""],
-  ["Trockene Augen","Augentrockenheit, Augenschmerzen","Augenbrennen, Tränenmangel, verminderte Tränenflüssigkeit, Benetzungsstörung des Auges, Sicca-Syndrom"],
-  ["Mundtrockenheit","wenig Speichel, wenig Spucke, Speichelfluss reduziert, Schluckbeschwerden","Speichelmangel, Trockenheit im Mund, Xerostomie"],
-  ["Trockene Haut","Hauttrockenheit, Hautaustrocknen, rauhe Haut, raue Haut, wunde Haut","feuchtigkeitsarme Haut, spröde Haut, rissige Haut"],
-  ["Geschmacksstörungen","schmecke nichts, nichts schmeckt, kein Geschmack, ekelhafter Geschmack","gestörter Geschmack, Geschmacksveränderung, Geschmacksverlust"],
-  ["Verdauungsstörungen","schlechte Verdauung, Dyspepsie, Magenverstimmung, Verdauungsbeschwerden","Magenunwohlsein, Verdauungsprobleme, Aufstossen"],
-  ["Schluckstörungen","Schmerzen beim Schlucken, Schluckbeschwerden, schmerzhaftes Schlucken","Halsweh beim Schlucken, Schluckschwierigkeiten, Kloßgefühl Hals, erschwertes Schlucken"],
-  ["Atembeschwerden","Atemnot, Luftnot, Kurzatmigkeit, schwere Atmung, keine Luft bekommen","erschwerte Atmung, Atemprobleme, Dyspnoe, Luftmangel"],
-  ["Hautausschlag","Jucken, Kratzstellen, Kratzen, Rötung, Hautirritation","Ausschlag, Hautveränderung, rote Stellen, Ekzem"],
-  ["Schwellung Extremitäten","schwere Beine, Wasserbeine, geschwollene Arme","Flüssigkeitsansammlung in den Armen oder Beinen, Beinödem, Armödem, Lymphödem, dicke Beine"],
-  ["Nasenbluten","trockene Nase","Blut Nase"],
-  ["Euphorie","Stimmungsschwankungen, Stimmungsaufhellung, Hochstimmung","Aufgedrehtheit, Überschwang, manisch, Glücksgefühl, Überdreht"],
-  ["Augenreizung","Augenschmerzen, gereizte Augen, rote Augen, juckende Augen, tränende Augen","empfindliche Augen"],
-  ["Erschöpfung","erschöpft, immer müde, Niedergeschlagenheit, Abgeschlagenheit, Ermattung, Schlappheit, kraftlos, schlapp, Fatigue, Exhaustion, Mattigkeit, Burnout, Ausgebranntheit, Ausgebranntsein, Überlastung, Zermürbung, innere Leere, am Ende seiner Kräfte sein","Kraftlosigkeit, Antriebslosigkeit, Ermüdung, Ausgelaugtheit, keine Energie, energielos, antriebslos, Asthenie, Adynamie, Entkräftung, Auszehrung, Abgespanntheit, Energielosigkeit, totale Entkräftung, völlige Kraftlosigkeit"],
-  ["Fieber","Schüttelfrost, Frieren, Kältegefühl, Krankheitsgefühl, Appetitverlust, trockener Husten, Grippe, Erkältung","Temperaturerhöhung, Fieberzustand, fieberhafte Erkrankung, heiss, Hitze"],
-  ["Grippeähnliche Symptome","Fieber, Schüttelfrost, Frieren, Kältegefühl, Kopfschmerzen, Krankheitsgefühl, trockener Husten, Grippe, Erkältung","grippale Beschwerden"],
-  ["Generalisiertes Ödem","Schwellung im Gewebe am ganzen Körper, Wassereinlagerungen, Wassereinlagerung","Schwellung des gesamten Körpers, diffuses Ödem, Wasser Körper"],
-  ["Muskelschwäche","Schwäche, Kraftlosigkeit, schwach","Myasthenie, Muskelermüdung, Muskelabbau, schlaffe Muskeln"],
-  ["Kopfschmerzen","Kopfweh","Spannungskopfschmerzen, Clusterkopfschmerzen, Kopfdröhnen, Kopfdruck"],
-  ["Schwerhörigkeit","Hörverlust, Hörsturz, schlecht hören","Hörbeeinträchtigung, Hörschwäche, Taubheit, Hypoakusis, schlechtes Gehör"],
-  ["Herzinsuffizienz","Herzschwäche, schwaches Herz, Herzmuskelschwäche","Herzversagen, unzureichende Herzfunktion"],
-  ["Hitzewallungen","Rötung, Schwitzen","Hitzeschub, Flush, Wärmegefühl, Hitzereaktion, nächtliches Schwitzen"],
-  ["Schwitzen","Nässe, Nachtschweiß, Schweißfluss","Transpiration, Schweißbildung, unangenehmer Körpergeruch"],
-  ["Hoher Blutdruck","Hypertonie, Hypertonus, Ohrensausen, Kopfschmerzen, Schwindel, gerötetes Gesicht","arterielle Hypertonie, erhöhter Blutdruck, roter Kopf"],
-  ["Niedriger Blutdruck","Hypotonie, Hypotonus, Ohnmacht, umkippen, umgekippt, umgefallen","Kreislaufprobleme, blasse Haut, kalte Füße, Kreislaufkollaps"],
-  ["Infektionen und Besiedelung auf der Haut durch Pilze und Bakterien","Entzündung, Hautpilz, Nagelpilz","Hautjucken, Hautschuppung, Follikulitis, Mykose, Abszess"],
-  ["Reaktion an der Einstichstelle","Schmerzen an der Einstichstelle, Injektionsstelle, Rötung, Schwellung Einstichstelle","Gewebereizung, Hautschwellung, lokale Irritation, Hautreaktion"],
-  ["Schlafstörungen","schlecht schlafen, einschlafen, durchschlafen, Insomnie","Schlafprobleme, Schlaflosigkeit, wach liegen"],
-  ["Reizbarkeit","leicht reizbar, wütend, Stimmungsschwankungen","Empfindlichkeit, Nervosität, Unruhe, Feindseligkeit, aggressiv, aufbrausend, Erregbarkeit"],
-  ["Halsentzündung","Heiserkeit, roter Hals, keine Stimme, rauhe Stimme, Rachen, Kehlkopfentzündung","rauer Hals, Halskratzen, heisere Stimme, Mandelentzündung, Rachenentzündung"],
-  ["Abnahme der Libido","Sexualtrieb fehlt, wenig Lust, Kein Sex, Libido","Vermeidung körperlicher Nähe, Erregungslosigkeit, sexuelles Desinteresse, vermindertes Lustempfinden"],
-  ["Lungenentzündung","Pneumonie, Atemnot, Husten","atemabhängige Brustschmerzen, Kurzatmigkeit, schleimiger Auswurf, Lungeninfektion, Bronchopneumonie"],
-  ["Allgemeines Unwohlsein","Unbehagen, Unbehaglichkeit, Krankheitsgefühl","Befindlichkeitsstörung, Malaise, Unpässlichkeit, Mattigkeit, matt fühlen"],
-  ["Gedächtnisstörungen","Gedächtnisverlust, Vergessen, Demenz, vergesslich","Vergesslichkeit, Wortfindungsstörung, Erinnerungsstörung, Amnesie, Worte fehlen"],
-  ["Entzündung Mundschleimhaut","wunde Stellen im Mund, Zahnfleisch, Aphthen, schmerzhafter Mund, vermehrter Speichelfluss","Stomatitis, Mundgeschwüre, Zahnfleischbluten, Mundgeruch, Bläschen Mund"],
-  ["Muskelkrämpfe","Wadenkrämpfe, Verkrampfung","Muskelverkrampfung, Muskelschmerzen, Muskelspasmus, Muskelverhärtung, Muskelzucken"],
-  ["Muskelschwäche Beine","schwache Beine, nicht standfest, Gehen fällt schwer","Beinschwäche, Beinmuskelschwäche"],
-  ["Muskelschmerzen","Gliederschmerzen, Muskelkater","Muskelbeschwerden"],
-  ["Veränderungen der Fingernägel oder Zehennägel","Nagelveränderung, weiße Flecken, Veränderungen Fingernägel, Veränderungen Zehennägel","schwarze Nägel, verfärbte Nägel, brüchige Nägel, Nagelprobleme"],
-  ["Verlust der Fingernägel oder Zehennägel","Nagel fällt ab, Nagel löst sich, Verlust Fingernägel, Verlust Fußnägel","Nagelbrüchigkeit, krümelige Nägel"],
-  ["Übelkeit","Würgereiz, Würgreiz, übel, Nausea, Kotzübel, Emesis","Brechreiz, schlecht sein, flaues Gefühl, Magenunwohlsein, Unwohlsein"],
-  ["Nackenschmerzen","Nackenspannung","Nackenbeschwerden, Nackenverspannung, HWS Syndrom, steifer Nacken"],
-  ["Nicht herzbedingte Brustschmerzen","Brustverspannung",""],
-  ["Gliederschmerzen","Beinschmerzen, Armschmerzen","Extremitätenschmerzen, Gliedmaßenschmerzen"],
-  ["Hand-Fuß-Syndrom","Kribbeln, Taubheit, Jucken, Hände, Füße, Hand Fuß Syndrom, HandFußSyndrom","schmerzhafte Rötung Handflächen, Schwellung Fußsohlen"],
-  ["Herzklopfen","starker Herzschlag, Herzpochen",""],
-  ["Taubheit der Hände oder Füße","taubes Gefühl, kein Gefühl, Taubheit Hände, Taubheit Füße",""],
-  ["Kribbeln","Ameisenlaufen, Pelzigkeit, Taubsein, Prickeln, kalte Hände, Missempfindung","Kältegefühl, Wärmegefühl"],
-  ["Pneumonitis","Lungenentzündung ohne Krankheitserreger, nicht infektionsbedingte Lungenentzündung",""],
-  ["Juckreiz","Jucken, Pruritus, Krätze","Kratzzwang, kratzen, Hautjucken"],
-  ["Akne","Papeln, Pusteln, Pickel, Eiter","Hautunreinheiten, Mitesser"],
-  ["Andere Erkrankung des reproduktiven Systems","Endometriumhyperplasie, Uterus, Gebärmutter, Eierstock",""],
-  ["Herzrasen","schneller Puls, Herzjagen, das ganze Herz schlägt schnell","rasendes Herz, unruhiges Herz"],
-  ["Magenschmerzen","Bauchweh, Magendrücken","Magenweh, Magenkrämpfe, Magenzwicken, Magengrummeln"],
-  ["Herzrhythmusstörung","schneller Puls, Herzjagen, nicht jeder Schlag wird übergeleitet","Herzklopfen, Tachykardie, Palpitation"],
-  ["Thrombose","Blutgerinnsel","Gefäßverschluss, Venenthrombose, arterielle Thrombose"],
-  ["Tinnitus","Ohrensausen, Piepgeräusch, Geräusch im Ohr, Ton im Ohr","Ohrgeräusch, Puls im Ohr"],
-  ["Behandlungsbedingtes sekundäres Malignom","Krebs, Tumor",""],
-  ["Vaginaler Ausfluss","vaginale Feuchte, Feuchtigkeit, feuchte Scheide, Scheidenausfluss","Vaginalsekret"],
-  ["Scheidentrockenheit","Trockenheit, trockene Scheide","Vaginalatrophie, juckende Scheide"],
-  ["Vaginale Blutung","Blut aus der Scheide, Scheidenblutung","Genitalblutung, Schmierblutung, Zwischenblutung"],
-  ["Andere Erkrankung der Blutgefäße","Blutung, Schwellung, Vene, Venenentzündung",""],
-  ["Herzarrhythmie","Herzrhythmusstörung, Herzstolpern","unregelmäßiger Herzschlag, Extrasystolen, unregelmäßiger Puls"],
-  ["Schwindel","Bewegungsgefühl","Taumel, wackelig, Gangunsicherheit, schwummerig"],
-  ["Erbrechen","Kotzen, Spucken, Würgen","sich übergeben, sich erbrechen"],
-  ["Verstärkte Tränenbildung","Weinen, Wasser im Auge, feuchte Augen","übermäßige Tränenproduktion, Tränenüberfluss"],
-  ["Gewichtszunahme","zugenommen, Zunehmen","Gewichtsanstieg, mehr wiegen"],
-  ["Gewichtsverlust","abgenommen, Abnehmen","Gewichtsminderung, Gewichtsreduktion, weniger wiegen"],
-];
-
-// ── SYMPTOMS-Array aufbauen ────────────────────────────────────────────────
-const SYMPTOMS = RAW.map(([name, syn1, syn2], i) => ({
-  id: _id(name),
-  name,
-  suggested: i < 5,
-  aliases: _aliases(syn1, syn2),
-  questions: [_severityQ(name), TREATMENT_Q],
-  result: _result(name),
-}));
-
-// ── Spezifisches Ergebnis für Bauchschmerzen ───────────────────────────────
-(function() {
-  const s = SYMPTOMS.find(x => x.id === 'bauchschmerzen');
-  if (!s) return;
-  const general = [
-    { heading: "Allgemeine Tipps bei Bauchschmerzen", body: "Denken Sie immer daran, genug zu trinken! Für die Verdauung benötigt Ihr Körper ausreichend Flüssigkeit. Versuchen Sie bei Blähungen warme Kräutertees (Anis, Fenchel, Kümmel, Kamille). Gegen Blähungen hilft oft Wärme – eine Wärmflasche oder ein erwärmtes Kirschkernkissen auf dem schmerzenden Teil des Bauches kann Erleichterung bringen. Auch leichtes Massieren im Uhrzeigersinn kann Verspannungen lösen. Bei Magenproblemen hilft Schonkost: Kartoffeln, gekochte Karotten, Bananen, eingeweichte Haferflocken oder Knäckebrot. Essen Sie langsam und kauen Sie gründlich. Auch Stress und eine hektische Lebensweise können Magenprobleme verursachen." },
-    { heading: "Wann ärztlich abklären?", body: "Wenn die Bauchschmerzen stark sind, plötzlich zunehmen oder mit anderen Symptomen einhergehen, wenden Sie sich bitte umgehend an Ihr Behandlungsteam." },
-  ];
-  s.result = {
-    contextLabel: ({ a }) =>
-      (SEVERITY_LABEL[a[0]] || "Mäßig") + " · " + (TREATMENT_LABEL[a[1]] || ""),
-    summary: "Bauchschmerzen können viele Ursachen haben. Bei Brustkrebspatientinnen können bestimmte Therapien Verdauungsprobleme verursachen.",
-    sections: ({ a }) => {
-      const t = a[1];
-      if (t === 'her2') return [
-        { heading: "anti-HER2 Antikörper (Trastuzumab/Herceptin oder Pertuzumab/Perjeta)", body: "Bei Brustkrebspatientinnen, die Antikörper gegen HER2 (Trastuzumab, Pertuzumab (Perjeta)) erhalten, beobachtet man häufiger Verdauungsprobleme wie Durchfall und gelegentlich unter Trastuzumab (Herceptin) auch Magenschmerzen. Pertuzumab (Perjeta) kann Durchfall hervorrufen – am häufigsten in Kombination mit Paclitaxel oder Docetaxel. Ältere Patientinnen (≥ 65 Jahre) haben ein größeres Risiko. Je nach Häufigkeit und Schweregrad der Durchfälle sollten Sie sich bei Ihren behandelnden Ärzten vorstellen." },
-        ...general,
-      ];
-      if (t === 'cdk') return [
-        { heading: "CDK4/6i Abemaciclib (Verzenios)", body: "Bei Brustkrebspatientinnen, die den CDK4/6i Abemaciclib (Verzenios) erhalten, beobachtet man häufiger Bauchschmerzen, Durchfall und Blähungen. Durchfall ist die häufigste Nebenwirkung dieses Medikaments. Meist tritt der Durchfall etwa eine Woche nach Behandlungsbeginn auf und dauert ca. 10 Tage an. Beim ersten Anzeichen von dünnem Stuhl sollte eine Therapie mit einem Medikament gegen Durchfall begonnen werden (z.B. Loperamid). Bitte wenden Sie sich an Ihre behandelnden Ärzte!" },
-        ...general,
-      ];
-      if (t === 'chemo') return [
-        { heading: "Chemotherapie", body: "Bei Brustkrebspatientinnen, die eine Chemotherapie erhalten, beobachtet man häufiger: Magenschleimhautentzündungen, Verdauungsprobleme (Verstopfung oder Durchfall), Blähungen, Blasen- oder Nierenprobleme. Diese Beschwerden entstehen, weil die Chemotherapie die Schleimhäute im Verdauungstrakt reizt oder schädigt. Die Probleme können manchmal auch durch Begleitmedikamente, z.B. gegen Übelkeit, hervorgerufen werden." },
-        ...general,
-      ];
-      return [
-        { heading: "Allgemeine Informationen", body: "Bauchschmerzen können viele Ursachen haben. Antikörper gegen HER2 (Trastuzumab, Pertuzumab (Perjeta)) und der CDK4/6-Hemmer Abemaciclib (Verzenios) können Bauchschmerzen und Durchfall verursachen. Sprechen Sie mit Ihrem Behandlungsteam über Ihre Beschwerden." },
-        ...general,
-      ];
-    },
-    suggested: [
-      { tag: "Mini-Lektion", title: "Was hilft bei Verdauungsproblemen?", minutes: 5 },
-      { tag: "Routine",      title: "Schonkost – was ist erlaubt?",       minutes: 4 },
-    ],
-  };
-})();
-
-// ── Spezifisches Ergebnis für Übelkeit ────────────────────────────────────
-(function() {
-  const s = SYMPTOMS.find(x => x.id === 'uebelkeit');
-  if (!s) return;
-
-  // Eigene zweite Frage mit 6 Optionen
-  s.questions = [
-    s.questions[0],
-    {
-      q: "Welche Medikamente erhalten Sie aktuell?",
-      options: [
-        { key: "chemo", label: "Chemotherapie",                              desc: "Klassische Zytostatika, z. B. Taxane oder Anthrazykline" },
-        { key: "cdk",   label: "CDK4/6-Hemmer (Ibrance, Kisqali, Verzenios)", desc: "Palbociclib, Ribociclib oder Abemaciclib" },
-        { key: "mtor",  label: "mTOR-Inhibitor Afinitor",                    desc: "Everolimus (Afinitor)" },
-        { key: "cape",  label: "Capecitabine-Tabletten",                     desc: "Orale Chemotherapie (Xeloda)" },
-        { key: "other", label: "Andere Medikamente in Tablettenform",        desc: "Sonstige orale Therapie" },
-        { key: "none",  label: "Keine Medikamente",                          desc: "Ich nehme aktuell keine Medikamente ein" },
-      ],
-    },
-  ];
-
-  const LABELS = {
-    chemo: "Chemotherapie", cdk: "CDK4/6-Hemmer", mtor: "mTOR-Inhibitor Afinitor",
-    cape: "Capecitabine", other: "Andere Tabletten", none: "Keine Medikamente",
-  };
-
-  s.result = {
-    contextLabel: ({ a }) => (SEVERITY_LABEL[a[0]] || "Mäßig") + " · " + (LABELS[a[1]] || ""),
-    summary: "Übelkeit kann im Rahmen der Brustkrebstherapie auftreten. Ursache und die beste Vorgehensweise hängen stark von Ihrer aktuellen Therapie ab.",
-    sections: ({ a }) => {
-      const t = a[1];
-      const warn = { heading: "Wann ärztlich abklären?", body: "Es ist wichtig, dass Sie Ihren behandelnden Ärzten Ihre Beschwerden genau mitteilen, damit die Behandlung ggf. angepasst werden kann. Wenden Sie sich umgehend an Ihr Behandlungsteam, wenn Sie nichts bei sich behalten können oder sich Ihr Zustand schnell verschlechtert." };
-      if (t === 'chemo') return [
-        { heading: "Chemotherapie", body: "Übelkeit und Erbrechen sind sehr gefürchtet bei Patientinnen, die eine Chemotherapie erhalten. Daher ist vor Beginn der Behandlung wichtig, dass Sie ein ausführliches Gespräch mit Ihren behandelnden Ärzten führen, was auf Sie zukommt. Die Erwartungsangst kann die Beschwerden nämlich deutlich verstärken. In Abhängigkeit von der jeweiligen Chemotherapie erhalten Sie eine Begleitmedikation, die die Übelkeit verhindern soll. Trotz Einnahme dieser Medikamente kann es zu Geschmacksveränderungen, seltener zu Übelkeit oder Erbrechen kommen. Die Begleitmedikamente sind in den letzten Jahren so viel besser geworden, dass starke Übelkeit und Erbrechen zum Glück kaum noch vorkommen. Entspannungstechniken, Yoga oder Verhaltenstherapien können sehr gut gegen Übelkeit helfen, gerade wenn Sie die Erwartungsangst vor der nächsten Infusion plagt. Essen Sie eher viele kleine magenfreundliche Mahlzeiten (Schonkost) als wenige große Portionen. Hausmittel wie Teemischungen, Ingwer, Kaugummikauen, Akkupunktur sowie das Tragen von Akkupunkturarmbändern können ebenfalls sehr gut helfen." },
-        warn,
-      ];
-      if (t === 'cdk') return [
-        { heading: "CDK4/6-Hemmer (Ibrance, Kisqali, Verzenios)", body: "Die CDK4/6-Hemmer (Ibrance, Kisqali, Verzenios) verursachen bei einigen Patientinnen (meist leichte) Übelkeit und sehr selten Erbrechen. Essen Sie eher viele kleine magenfreundliche Mahlzeiten (Schonkost) als wenige große Portionen. Entspannungstechniken, Yoga oder Verhaltenstherapien können sehr gut gegen Übelkeit helfen. Hausmittel wie Teemischungen, Ingwer, Kaugummikauen, Akkupunktur sowie das Tragen von Akkupunkturarmbändern können ebenfalls sehr gut Linderung verschaffen. Eventuell ist es sinnvoll, dass Sie (vorübergehend) Medikamente gegen die Übelkeit erhalten." },
-        warn,
-      ];
-      if (t === 'mtor') return [
-        { heading: "mTOR-Inhibitor Afinitor", body: "Der mTOR-Inhibitor Afinitor verursacht bei einigen Patientinnen (meist leichte) Übelkeit und sehr selten Erbrechen. Entspannungstechniken, Yoga oder Verhaltenstherapien können sehr gut gegen Übelkeit helfen. Essen Sie eher viele kleine magenfreundliche Mahlzeiten (Schonkost) als wenige große Portionen. Hausmittel wie Teemischungen, Ingwer, Kaugummikauen, Akkupunktur sowie das Tragen von Akkupunkturarmbändern können ebenfalls sehr gut Linderung verschaffen. Eventuell ist es sinnvoll, dass Sie (vorübergehend) Medikamente gegen die Übelkeit erhalten." },
-        warn,
-      ];
-      if (t === 'cape') return [
-        { heading: "Capecitabine-Tabletten", body: "Die Einnahme von Capecitabine-Tabletten verursacht bei einigen Patientinnen (meist leichte) Übelkeit und sehr selten Erbrechen. Essen Sie eher viele kleine magenfreundliche Mahlzeiten (Schonkost) als wenige große Portionen. Entspannungstechniken, Yoga oder Verhaltenstherapien können sehr gut gegen Übelkeit helfen. Hausmittel wie Teemischungen, Ingwer, Kaugummikauen, Akkupunktur sowie das Tragen von Akkupunkturarmbändern können ebenfalls sehr gut Linderung verschaffen. Eventuell ist es sinnvoll, dass Sie (vorübergehend) Medikamente gegen die Übelkeit erhalten." },
-        warn,
-      ];
-      if (t === 'other') return [
-        { heading: "Andere Medikamente in Tablettenform", body: "Zahlreiche Medikamente können den Magen reizen und dadurch zu Übelkeit führen. Bitte besprechen Sie mit Ihren behandelnden Ärzten, ob Medikamente, die Sie einnehmen, ursächlich sein könnten, und welche Maßnahmen dann sinnvoll wären. Entspannungstechniken, Yoga oder Verhaltenstherapien können sehr gut gegen Übelkeit helfen. Hausmittel wie Teemischungen, Ingwer, Kaugummikauen, Akkupunktur sowie das Tragen von Akkupunkturarmbändern können ebenfalls sehr gut Linderung bei Übelkeit verschaffen. Essen Sie eher viele kleine magenfreundliche Mahlzeiten (Schonkost) als wenige große Portionen." },
-        warn,
-      ];
-      // none
-      return [
-        { heading: "Keine Medikamente", body: "Übelkeit kann sehr viele Ursachen haben. Wenn Sie keine Medikamente einnehmen, die ein Auslöser für die Übelkeit sein könnten, müssen ggf. andere Ursachen abgeklärt werden. Bitte besprechen Sie mit Ihren behandelnden Ärzten, welche Untersuchungen oder Maßnahmen jetzt sinnvoll sind. Hausmittel wie Teemischungen, Ingwer, Kaugummikauen, Akkupunktur sowie das Tragen von Akkupunkturarmbändern können Linderung verschaffen. Essen Sie eher viele kleine magenfreundliche Mahlzeiten (Schonkost) als wenige große Portionen. Zunächst sollte jedoch die Ursache Ihrer Übelkeit geklärt werden." },
-        warn,
-      ];
-    },
-    suggested: [
-      { tag: "Übung",       title: "Akupressur am Handgelenk (P6)",  minutes: 4 },
-      { tag: "Mini-Lektion", title: "Antiemetika richtig einnehmen", minutes: 3 },
-      { tag: "Entspannung", title: "Atemübung gegen Übelkeit",       minutes: 5 },
-    ],
-  };
-})();
-
-// ── Spezifisches Ergebnis für Erschöpfung ────────────────────────────────────
-(function() {
-  const s = SYMPTOMS.find(x => x.id === 'erschoepfung');
-  if (!s) return;
-
-  s.questions = [
-    s.questions[0], // behält _severityQ('Erschöpfung')
-    {
-      q: "Welche Behandlung trifft auf Sie zu?",
-      options: [
-        { key: "chemo_cdk",   label: "Chemotherapie / CDK4/6-Hemmer",       desc: "Laufende Behandlung mit Chemotherapie oder CDK4/6-Hemmer (z. B. Ibrance, Kisqali, Verzenios)" },
-        { key: "chemo_post",  label: "Chemotherapie kürzlich beendet",  desc: "Chemotherapie in den letzten Wochen oder Monaten abgeschlossen" },
-        { key: "radio",       label: "Strahlentherapie",                     desc: "Laufende Bestrahlung im Rahmen der Brustkrebs-Behandlung" },
-        { key: "antihor_cdk", label: "Antihormon + CDK4/6i",                desc: "Antihormontherapie in Kombination mit Ibrance, Kisqali oder Verzenios" },
-        { key: "none",        label: "Keine der genannten Therapien",        desc: "Keine medikamentöse Brustkrebs-Therapie aktuell" },
-      ],
-    },
-  ];
-
-  const LABELS = {
-    chemo_cdk:   "Chemotherapie / CDK4/6i",
-    chemo_post:  "Chemotherapie abgeschlossen",
-    radio:       "Strahlentherapie",
-    antihor_cdk: "Antihormon + CDK4/6i",
-    none:        "Keine der genannten",
-  };
-
-  s.result = {
-    contextLabel: ({ a }) => (SEVERITY_LABEL[a[0]] || "Mäßig") + " · " + (LABELS[a[1]] || ""),
-    summary: "Erschöpfung (Fatigue) ist eine der häufigsten Begleiterscheinungen der Brustkrebstherapie. Ursache und die beste Vorgehensweise hängen von Ihrer aktuellen Behandlung ab.",
-    sections: ({ a }) => {
-      const t = a[1];
-      const warn = { heading: "Wann ärztlich abklären?", body: "Wenn die Erschöpfung plötzlich stark zunimmt, mit weiteren Symptomen wie Atemnot, Herzrasen oder Schwindel einhergeht oder Sie sich nicht mehr ausreichend selbst versorgen können, wenden Sie sich bitte umgehend an Ihr Behandlungsteam." };
-      if (t === 'chemo_cdk') return [
-        { heading: "Chemotherapie oder CDK4/6-Hemmer (aktuell)", body: "Die Brustkrebs-Behandlung mittels Chemotherapie oder CDK4/6 Inhibitoren kann zu einer körperlichen und geistigen Erschöpfung, zu Müdigkeit und zu psychischen Belastungen führen – Ärzte sprechen hier von einer Fatigue. Oftmals werden diese Symptome als besonders belastend beschrieben, da sie das Alltagsleben einschränken und auch die Lebensqualität verringern können. Patientinnen beschreiben eine diffuse Antriebslosigkeit (wie „Stecker aus Steckdose gezogen“). Ob Sie tatsächlich unter einer behandlungsbedingten Fatigue leiden, wird Ihr Arzt/Ihre Ärztin klären. Das beste Mittel gegen die Symptome der Fatigue ist ein individuell, auf Ihre Leistungsfähigkeit abgestimmtes Bewegungsprogramm. Dabei sind Ausdauer- und leichte Krafttrainingseinheiten besonders wirkungsvoll. Radfahren, Schwimmen, Walken oder auch der Besuch in einem Fitnessstudio sind daher etwa zwei- bis dreimal wöchentlich zu empfehlen. Doch auch nach der Therapie sollten Sie das Fitnessprogramm gegen die Fatigue fortsetzen, da es dann sogar noch effektiver ist. Zusätzlich sollten Sie auf eine gesunde Ernährung und natürlich ausreichend Schlaf achten, um dem Körper unter der Therapie genüg Zeit für die Regeneration zu ermöglichen." },
-        warn,
-      ];
-      if (t === 'chemo_post') return [
-        { heading: "Chemotherapie abgeschlossen", body: "Die Brustkrebs-Behandlung mittels Chemotherapie kann zu einer körperlichen und geistigen Erschöpfung, zu Müdigkeit und zu psychischen Belastungen führen – Ärzte sprechen hier von einer Fatigue. Diese kann auch Wochen und Monate nach Abschluss Ihrer Chemotherapie noch andauern. Oftmals werden diese Symptome als besonders belastend beschrieben, da sie das Alltagsleben einschränken und auch die Lebensqualität verringern können. Patientinnen beschreiben eine diffuse Antriebslosigkeit (wie „Stecker aus Steckdose gezogen“). Ob Sie tatsächlich unter einer behandlungsbedingten Fatigue leiden, wird Ihr Arzt/Ihre Ärztin klären. Das beste Mittel gegen die Symptome der Fatigue ist ein individuell, auf Ihre Leistungsfähigkeit abgestimmtes Bewegungsprogramm. Dabei sind Ausdauer- und leichte Krafttrainingseinheiten besonders wirkungsvoll. Radfahren, Schwimmen, Walken oder auch der Besuch in einem Fitnessstudio sind daher etwa zwei- bis dreimal wöchentlich zu empfehlen. Doch auch nach der Therapie sollten Sie das Fitnessprogramm gegen die Fatigue fortsetzen, da es dann sogar noch effektiver ist. Zusätzlich sollten Sie auf eine gesunde Ernährung und natürlich ausreichend Schlaf achten, um dem Körper unter der Therapie genüg Zeit für die Regeneration zu ermöglichen." },
-        warn,
-      ];
-      if (t === 'radio') return [
-        { heading: "Strahlentherapie (aktuell)", body: "Auch die Strahlentherapie im Rahmen Ihrer Brustkrebs-Behandlung kann zu einer körperlichen und geistigen Erschöpfung, zu Müdigkeit und zu psychischen Belastungen führen – Ärzte sprechen hier von einer Fatigue. Oftmals werden diese Symptome als besonders belastend beschrieben, da sie das Alltagsleben einschränken und auch die Lebensqualität verringern können. Patientinnen beschreiben eine diffuse Antriebslosigkeit (wie „Stecker aus Steckdose gezogen“). Ob Sie tatsächlich unter einer behandlungsbedingten Fatigue leiden, wird Ihr Arzt/Ihre Ärztin klären. Das beste Mittel gegen die Symptome der Fatigue ist ein individuell, auf Ihre Leistungsfähigkeit abgestimmtes Bewegungsprogramm. Dabei sind Ausdauer- und leichte Krafttrainingseinheiten besonders wirkungsvoll. Radfahren, Schwimmen, Walken oder auch der Besuch in einem Fitnessstudio sind daher etwa zwei- bis dreimal wöchentlich zu empfehlen. Doch auch nach der Therapie sollten Sie das Fitnessprogramm gegen die Fatigue fortsetzen, da es dann sogar noch effektiver ist. Zusätzlich sollten Sie auf eine gesunde Ernährung und natürlich ausreichend Schlaf achten, um dem Körper unter der Therapie genüg Zeit für die Regeneration zu ermöglichen." },
-        warn,
-      ];
-      if (t === 'antihor_cdk') return [
-        { heading: "Antihormontherapie + CDK4/6i (Ibrance, Kisqali, Verzenios)", body: "Die Brustkrebs-Behandlung mit einer Antihormontherapie in Kombination mit den so genannten CDK4/6-Hemmern Ibrance, Kisqali oder Verzenios kann zu einer körperlichen und geistigen Erschöpfung, zu Müdigkeit und zu psychischen Belastungen führen – Ärzte sprechen hier von einer Fatigue. Oftmals werden diese Symptome als besonders belastend beschrieben, da sie das Alltagsleben einschränken und auch die Lebensqualität verringern können. Patientinnen beschreiben eine diffuse Antriebslosigkeit (wie „Stecker aus Steckdose gezogen“). Ob Sie tatsächlich unter einer behandlungsbedingten Fatigue leiden, wird Ihr Arzt/Ihre Ärztin klären. Das beste Mittel gegen die Symptome der Fatigue ist ein individuell, auf Ihre Leistungsfähigkeit abgestimmtes Bewegungsprogramm. Dabei sind Ausdauer- und leichte Krafttrainingseinheiten besonders wirkungsvoll. Radfahren, Schwimmen, Walken oder auch der Besuch in einem Fitnessstudio sind daher etwa zwei- bis dreimal wöchentlich zu empfehlen. Doch auch nach der Therapie sollten Sie das Fitnessprogramm gegen die Fatigue fortsetzen, da es dann sogar noch effektiver ist. Zusätzlich sollten Sie auf eine gesunde Ernährung und natürlich ausreichend Schlaf achten, um dem Körper unter der Therapie genüg Zeit für die Regeneration zu ermöglichen." },
-        warn,
-      ];
-      // none
-      return [
-        { heading: "Keine der genannten Therapien", body: "Auch bei Patientinnen, die keine medikamentöse Brustkrebs-Therapie erhalten, können Symptome wie körperliche und geistige Erschöpfung und Müdigkeit auftreten – Ärzte sprechen hier von einer Fatigue. Eine mögliche Ursache ist die psychische Belastung infolge der Krebserkrankung. Oftmals werden diese Symptome als besonders belastend beschrieben, da sie das Alltagsleben einschränken und auch die Lebensqualität verringern können. Patientinnen beschreiben eine diffuse Antriebslosigkeit (wie „Stecker aus Steckdose gezogen“). Ob Sie tatsächlich unter einer behandlungsbedingten Fatigue leiden, wird Ihr Arzt/Ihre Ärztin klären. Das beste Mittel gegen die Symptome der Fatigue ist ein individuell, auf Ihre Leistungsfähigkeit abgestimmtes Bewegungsprogramm. Dabei sind Ausdauer- und leichte Krafttrainingseinheiten besonders wirkungsvoll. Radfahren, Schwimmen, Walken oder auch der Besuch in einem Fitnessstudio sind daher etwa zwei- bis dreimal wöchentlich zu empfehlen. Doch auch nach der Therapie sollten Sie das Fitnessprogramm gegen die Fatigue fortsetzen, da es dann sogar noch effektiver ist. Zusätzlich sollten Sie auf eine gesunde Ernährung und natürlich ausreichend Schlaf achten, um dem Körper unter der Therapie genüg Zeit für die Regeneration zu ermöglichen." },
-        warn,
-      ];
-    },
-    suggested: [
-      { tag: "Bewegung",     title: "Fatigue-Bewegungsprogramm starten",      minutes: 5 },
-      { tag: "Mini-Lektion", title: "Was ist Fatigue?",                        minutes: 4 },
-      { tag: "Entspannung",  title: "Geführte Entspannung bei Erschöpfung", minutes: 8 },
-    ],
-  };
-})();
-
-window.SYMPTOMS = SYMPTOMS;
-window._poss = function(id) {
-  return _MASCULINE.has(id) ? 'Ihren' : _NEUTER.has(id) ? 'Ihr' : 'Ihre';
-};
-</script>
-
-<!-- ── iOS device frame ──────────────────────────────────────────────────── -->
-<script type="text/babel">
-// iOS 26 (Liquid Glass) device frame — no asset deps
-
-function IOSStatusBar({ dark = false, time = '9:41' }) {
-  const c = dark ? '#fff' : '#000';
-  return (
-    <div style={{
-      display: 'flex', gap: 154, alignItems: 'center', justifyContent: 'center',
-      padding: '21px 24px 19px', boxSizing: 'border-box',
-      position: 'relative', zIndex: 20, width: '100%',
-    }}>
-      <div style={{ flex: 1, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 1.5 }}>
-        <span style={{ fontFamily: '-apple-system, "SF Pro", system-ui', fontWeight: 590, fontSize: 17, lineHeight: '22px', color: c }}>{time}</span>
-      </div>
-      <div style={{ flex: 1, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, paddingTop: 1, paddingRight: 1 }}>
-        <svg width="19" height="12" viewBox="0 0 19 12">
-          <rect x="0" y="7.5" width="3.2" height="4.5" rx="0.7" fill={c}/>
-          <rect x="4.8" y="5" width="3.2" height="7" rx="0.7" fill={c}/>
-          <rect x="9.6" y="2.5" width="3.2" height="9.5" rx="0.7" fill={c}/>
-          <rect x="14.4" y="0" width="3.2" height="12" rx="0.7" fill={c}/>
-        </svg>
-        <svg width="17" height="12" viewBox="0 0 17 12">
-          <path d="M8.5 3.2C10.8 3.2 12.9 4.1 14.4 5.6L15.5 4.5C13.7 2.7 11.2 1.5 8.5 1.5C5.8 1.5 3.3 2.7 1.5 4.5L2.6 5.6C4.1 4.1 6.2 3.2 8.5 3.2Z" fill={c}/>
-          <path d="M8.5 6.8C9.9 6.8 11.1 7.3 12 8.2L13.1 7.1C11.8 5.9 10.2 5.1 8.5 5.1C6.8 5.1 5.2 5.9 3.9 7.1L5 8.2C5.9 7.3 7.1 6.8 8.5 6.8Z" fill={c}/>
-          <circle cx="8.5" cy="10.5" r="1.5" fill={c}/>
-        </svg>
-        <svg width="27" height="13" viewBox="0 0 27 13">
-          <rect x="0.5" y="0.5" width="23" height="12" rx="3.5" stroke={c} strokeOpacity="0.35" fill="none"/>
-          <rect x="2" y="2" width="20" height="9" rx="2" fill={c}/>
-          <path d="M25 4.5V8.5C25.8 8.2 26.5 7.2 26.5 6.5C26.5 5.8 25.8 4.8 25 4.5Z" fill={c} fillOpacity="0.4"/>
-        </svg>
-      </div>
+    <div class="icon-wrap">
+      <svg viewBox="0 0 24 24">
+        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+      </svg>
     </div>
-  );
-}
 
-function IOSDevice({ children, width = 402, height = 874, dark = false }) {
-  return (
-    <div style={{
-      width, height, borderRadius: 48, overflow: 'hidden',
-      position: 'relative', background: dark ? '#000' : '#F2F2F7',
-      boxShadow: '0 40px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.12)',
-      fontFamily: '-apple-system, system-ui, sans-serif',
-      WebkitFontSmoothing: 'antialiased',
-    }}>
-      {/* dynamic island */}
-      <div style={{
-        position: 'absolute', top: 11, left: '50%', transform: 'translateX(-50%)',
-        width: 126, height: 37, borderRadius: 24, background: '#000', zIndex: 50,
-      }} />
-      {/* status bar */}
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
-        <IOSStatusBar dark={dark} />
-      </div>
-      {/* content */}
-      <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ flex: 1, overflow: 'auto' }}>{children}</div>
-      </div>
-      {/* home indicator */}
-      <div style={{
-        position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 60,
-        height: 34, display: 'flex', justifyContent: 'center', alignItems: 'flex-end',
-        paddingBottom: 8, pointerEvents: 'none',
-      }}>
-        <div style={{
-          width: 139, height: 5, borderRadius: 100,
-          background: dark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.25)',
-        }} />
-      </div>
-    </div>
-  );
-}
+    <h1>Something <em>nice</em><br>is being built.</h1>
 
-Object.assign(window, { IOSDevice, IOSStatusBar });
-</script>
+    <p class="subtitle">
+      <!-- REPLACE: Update this description -->
+      We're working hard to bring you something great.
+      Check back soon — it'll be worth the wait!
+    </p>
 
-<!-- ── tweaks panel ──────────────────────────────────────────────────────── -->
-<script type="text/babel">
-const __TWEAKS_STYLE = `
-  .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
-    max-height:calc(100vh - 32px);display:flex;flex-direction:column;
-    transform:scale(var(--dc-inv-zoom,1));transform-origin:bottom right;
-    background:rgba(250,249,247,.78);color:#29261b;
-    -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
-    border:.5px solid rgba(255,255,255,.6);border-radius:14px;
-    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
-    font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
-  .twk-hd{display:flex;align-items:center;justify-content:space-between;
-    padding:10px 8px 10px 14px;cursor:move;user-select:none}
-  .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
-  .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);
-    width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
-  .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
-  .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;
-    overflow-y:auto;overflow-x:hidden;min-height:0}
-  .twk-row{display:flex;flex-direction:column;gap:5px}
-  .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
-  .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;color:rgba(41,38,27,.72)}
-  .twk-lbl>span:first-child{font-weight:500}
-  .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
-    color:rgba(41,38,27,.45);padding:10px 0 0}
-  .twk-sect:first-child{padding-top:0}
-  .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
-    background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
-  .twk-toggle[data-on="1"]{background:#34c759}
-  .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
-    background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
-  .twk-toggle[data-on="1"] i{transform:translateX(14px)}
-  .twk-btn{appearance:none;height:26px;padding:0 12px;border:0;border-radius:7px;
-    background:rgba(0,0,0,.78);color:#fff;font:inherit;font-weight:500;cursor:default}
-  .twk-btn:hover{background:rgba(0,0,0,.88)}
-  .twk-chips{display:flex;gap:6px}
-  .twk-chip{position:relative;appearance:none;flex:1;min-width:0;height:46px;padding:0;
-    border:0;border-radius:6px;overflow:hidden;cursor:default;
-    box-shadow:0 0 0 .5px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.06)}
-  .twk-chip[data-on="1"]{box-shadow:0 0 0 1.5px rgba(0,0,0,.85),0 2px 6px rgba(0,0,0,.15)}
-  .twk-chip svg{position:absolute;top:6px;left:6px;width:13px;height:13px;
-    filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
-`;
+  </div>
 
-function useTweaks(defaults) {
-  const [values, setValues] = React.useState(defaults);
-  const setTweak = React.useCallback((keyOrEdits, val) => {
-    const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null
-      ? keyOrEdits : { [keyOrEdits]: val };
-    setValues((prev) => ({ ...prev, ...edits }));
-  }, []);
-  return [values, setTweak];
-}
+  <script>
+  </script>
 
-function TweaksPanel({ title = 'Tweaks', children }) {
-  const [open, setOpen] = React.useState(false);
-  const dragRef = React.useRef(null);
-  const offsetRef = React.useRef({ x: 16, y: 16 });
-
-  React.useEffect(() => {
-    const onMsg = (e) => {
-      const t = e?.data?.type;
-      if (t === '__activate_edit_mode') setOpen(true);
-      else if (t === '__deactivate_edit_mode') setOpen(false);
-    };
-    window.addEventListener('message', onMsg);
-    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
-    return () => window.removeEventListener('message', onMsg);
-  }, []);
-
-  const dismiss = () => {
-    setOpen(false);
-    window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
-  };
-
-  const onDragStart = (e) => {
-    const panel = dragRef.current;
-    if (!panel) return;
-    const r = panel.getBoundingClientRect();
-    const sx = e.clientX, sy = e.clientY;
-    const startRight = window.innerWidth - r.right;
-    const startBottom = window.innerHeight - r.bottom;
-    const move = (ev) => {
-      offsetRef.current = { x: startRight - (ev.clientX - sx), y: startBottom - (ev.clientY - sy) };
-      panel.style.right = offsetRef.current.x + 'px';
-      panel.style.bottom = offsetRef.current.y + 'px';
-    };
-    const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); };
-    window.addEventListener('mousemove', move);
-    window.addEventListener('mouseup', up);
-  };
-
-  if (!open) return null;
-  return (
-    <>
-      <style>{__TWEAKS_STYLE}</style>
-      <div ref={dragRef} className="twk-panel" style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
-        <div className="twk-hd" onMouseDown={onDragStart}>
-          <b>{title}</b>
-          <button className="twk-x" onMouseDown={(e) => e.stopPropagation()} onClick={dismiss}>✕</button>
-        </div>
-        <div className="twk-body">{children}</div>
-      </div>
-    </>
-  );
-}
-
-function TweakSection({ title, children }) {
-  return <><div className="twk-sect">{title}</div>{children}</>;
-}
-
-function TweakToggle({ label, value, onChange }) {
-  return (
-    <div className="twk-row twk-row-h">
-      <div className="twk-lbl"><span>{label}</span></div>
-      <button type="button" className="twk-toggle" data-on={value ? '1' : '0'}
-              role="switch" aria-checked={!!value} onClick={() => onChange(!value)}><i /></button>
-    </div>
-  );
-}
-
-function TweakButton({ onClick, children }) {
-  return <button type="button" className="twk-btn" onClick={onClick}>{children}</button>;
-}
-
-function __twkIsLight(hex) {
-  const h = String(hex).replace('#', '');
-  const x = h.length === 3 ? h.replace(/./g, (c) => c + c) : h.padEnd(6, '0');
-  const n = parseInt(x.slice(0, 6), 16);
-  if (Number.isNaN(n)) return true;
-  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
-  return r * 299 + g * 587 + b * 114 > 148000;
-}
-
-function TweakColor({ label, value, options, onChange }) {
-  if (!options || !options.length) {
-    return (
-      <div className="twk-row twk-row-h">
-        <div className="twk-lbl"><span>{label}</span></div>
-        <input type="color" value={value} onChange={(e) => onChange(e.target.value)}
-               style={{ width: 56, height: 22, border: '.5px solid rgba(0,0,0,.1)', borderRadius: 6, padding: 0, cursor: 'default', background: 'transparent' }} />
-      </div>
-    );
-  }
-  const key = (o) => String(JSON.stringify(o)).toLowerCase();
-  const cur = key(value);
-  return (
-    <div className="twk-row">
-      <div className="twk-lbl"><span>{label}</span></div>
-      <div className="twk-chips" role="radiogroup">
-        {options.map((o, i) => {
-          const on = key(o) === cur;
-          return (
-            <button key={i} type="button" className="twk-chip" role="radio"
-                    aria-checked={on} data-on={on ? '1' : '0'}
-                    style={{ background: o }} onClick={() => onChange(o)}>
-              {on && (
-                <svg viewBox="0 0 14 14" style={{ position: 'absolute', top: 6, left: 6, width: 13, height: 13 }}>
-                  <path d="M3 7.2 5.8 10 11 4.2" fill="none" strokeWidth="2.2"
-                        strokeLinecap="round" strokeLinejoin="round"
-                        stroke={__twkIsLight(o) ? 'rgba(0,0,0,.78)' : '#fff'} />
-                </svg>
-              )}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-Object.assign(window, { useTweaks, TweaksPanel, TweakSection, TweakToggle, TweakButton, TweakColor });
-</script>
-
-<!-- ── main app ──────────────────────────────────────────────────────────── -->
-<script type="text/babel">
-const { useState, useEffect, useMemo } = React;
-
-const C = {
-  primary: "#BF0058",
-  primaryHot: "#FF3686",
-  primarySoft: "#FFC3DB",
-  pinkBorder: "#EEDCE4",
-  pinkBorderSoft: "#F3E7EC",
-  pinkBgSoft: "#FAF5F8",
-  pinkBgMid: "#F7EEF2",
-  navy: "#001033",
-  ink: "#181818",
-  plum: "#3A1D27",
-  midGray: "#464646",
-  coolGray: "#99A6B9",
-  subBlue: "#4C6284",
-  warnBg: "#FFECA6",
-  warnBgSoft: "#FFF5D2",
-  warnBorder: "#FFCF20",
-  white: "#FFFFFF",
-  disabled: "#B3BCCB"
-};
-
-const FONT = `"Mulish", "Proxima Nova", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif`;
-
-const Icon = {
-  back: (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" {...p}><path d="M15 6L9 12L15 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  close: (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" {...p}><path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  search: (p) => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" {...p}><circle cx="9" cy="9" r="6.25" stroke={C.primary} strokeWidth="1.75"/><path d="M14 14L17 17" stroke={C.primary} strokeWidth="1.75" strokeLinecap="round"/></svg>,
-  chevron: (p) => <svg width="16" height="16" viewBox="0 0 16 16" fill="none" {...p}><path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  warn: (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" {...p}><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" strokeWidth="1.75" strokeLinejoin="round"/><path d="M12 10V14M12 17V17.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/></svg>,
-  edit: (p) => <svg width="16" height="16" viewBox="0 0 16 16" fill="none" {...p}><path d="M11.3 2.7L13.3 4.7L5 13H3V11L11.3 2.7Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/></svg>,
-  check: (p) => <svg width="16" height="16" viewBox="0 0 16 16" fill="none" {...p}><path d="M3 8L7 12L13 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  play: (p) => <svg width="18" height="18" viewBox="0 0 18 18" fill="none" {...p}><path d="M5 3.5L14 9L5 14.5V3.5Z" fill="currentColor"/></svg>,
-  book: (p) => <svg width="18" height="18" viewBox="0 0 18 18" fill="none" {...p}><path d="M3 4.5C3 3.7 3.7 3 4.5 3H9V15H4.5C3.7 15 3 14.3 3 13.5V4.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M15 4.5C15 3.7 14.3 3 13.5 3H9V15H13.5C14.3 15 15 14.3 15 13.5V4.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/></svg>,
-  bowl: (p) => <svg width="18" height="18" viewBox="0 0 18 18" fill="none" {...p}><path d="M2.5 8H15.5C15.5 11.5 12.5 14.5 9 14.5C5.5 14.5 2.5 11.5 2.5 8Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M1.5 8H16.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><path d="M9 5C9 4 9.7 3.5 9.7 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
-  yoga: (p) => <svg width="18" height="18" viewBox="0 0 18 18" fill="none" {...p}><circle cx="9" cy="4" r="1.5" stroke="currentColor" strokeWidth="1.5"/><path d="M5 14L9 9L13 14M4 11H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  clock: (p) => <svg width="16" height="16" viewBox="0 0 16 16" fill="none" {...p}><circle cx="8" cy="8" r="5.5" stroke="currentColor" strokeWidth="1.5"/><path d="M8 5V8L10 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-};
-
-const iconBtnStyle = {
-  width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center",
-  background: "transparent", border: "none", cursor: "pointer", borderRadius: 100,
-  WebkitTapHighlightColor: "transparent"
-};
-
-function AppBar({ title, onBack, onClose }) {
-  return (
-    <div style={{
-      position: "sticky", top: 0, zIndex: 20, background: C.white,
-      height: 56, display: "flex", alignItems: "center", padding: "0 8px",
-      borderBottom: "1px solid rgba(0,0,0,0.04)"
-    }}>
-      {onBack
-        ? <button onClick={onBack} aria-label="Zurück" style={iconBtnStyle}><Icon.back style={{ color: C.navy }}/></button>
-        : <div style={{ width: 40 }} />}
-      <div style={{ flex: 1, textAlign: "center", fontWeight: 700, fontSize: 16, color: C.plum, letterSpacing: "-0.01em" }}>{title}</div>
-      {onClose
-        ? <button onClick={onClose} aria-label="Schließen" style={iconBtnStyle}><Icon.close style={{ color: C.navy, width: 20, height: 20 }}/></button>
-        : <div style={{ width: 40 }} />}
-    </div>
-  );
-}
-
-function PrimaryBtn({ children, onClick, disabled }) {
-  return (
-    <button onClick={onClick} disabled={disabled} style={{
-      width: "100%", height: 48, borderRadius: 80, border: "none",
-      background: disabled ? C.disabled : C.primary, color: C.white,
-      fontFamily: FONT, fontWeight: 700, fontSize: 16, cursor: disabled ? "default" : "pointer",
-      transition: "transform 120ms, background 200ms", WebkitTapHighlightColor: "transparent"
-    }}
-    onMouseDown={(e) => !disabled && (e.currentTarget.style.transform = "scale(0.985)")}
-    onMouseUp={(e) => (e.currentTarget.style.transform = "")}
-    onMouseLeave={(e) => (e.currentTarget.style.transform = "")}>
-      {children}
-    </button>
-  );
-}
-
-function GhostBtn({ children, onClick, icon }) {
-  return (
-    <button onClick={onClick} style={{
-      width: "100%", height: 50, borderRadius: 80, border: "none",
-      background: "transparent", color: C.primary,
-      fontFamily: FONT, fontWeight: 700, fontSize: 16, cursor: "pointer",
-      display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
-      WebkitTapHighlightColor: "transparent"
-    }}>
-      {icon}{children}
-    </button>
-  );
-}
-
-// ── Intro sheet ───────────────────────────────────────────────────────────
-function IntroSheet({ onDismiss }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { requestAnimationFrame(() => setMounted(true)); }, []);
-  return (
-    <div style={{
-      position: "absolute", inset: 0, zIndex: 40,
-      background: mounted ? "rgba(0,0,0,0.48)" : "rgba(0,0,0,0)",
-      transition: "background 240ms",
-      display: "flex", flexDirection: "column", justifyContent: "flex-end"
-    }} onClick={onDismiss}>
-      <div onClick={(e) => e.stopPropagation()} style={{
-        background: C.white, borderRadius: "24px 24px 0 0",
-        boxShadow: "0 -4px 48px rgba(0,16,51,0.1)",
-        padding: "16px 0 0",
-        transform: mounted ? "translateY(0)" : "translateY(100%)",
-        transition: "transform 320ms cubic-bezier(.2,.8,.2,1)"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", padding: "0 8px 8px" }}>
-          <div style={{ width: 40 }} />
-          <div style={{ flex: 1, textAlign: "center", fontWeight: 700, fontSize: 16, color: C.ink }}>Symptom-Kompass</div>
-          <button onClick={onDismiss} aria-label="Schließen" style={iconBtnStyle}><Icon.close style={{ color: C.navy }}/></button>
-        </div>
-        <div style={{ padding: "0 24px 24px" }}>
-          <h1 style={{ margin: "12px 0 4px", fontSize: 24, lineHeight: "32px", fontWeight: 700, color: C.primaryHot, textAlign: "center", letterSpacing: "-0.01em" }}>
-            Schnelle Hilfe und Tipps mit dem Symptom-Kompass
-          </h1>
-          <p style={{ margin: "12px 0 20px", fontSize: 14, lineHeight: "20px", color: C.ink, textAlign: "center" }}>
-            Hier finden Sie schnelle Orientierungshilfe und Unterstützung bei Ihren Symptomen mit leitliniengerechten Vorschlägen.
-          </p>
-          <div style={{ background: C.warnBg, borderRadius: 12, padding: "16px", display: "flex", gap: 12, alignItems: "flex-start" }}>
-            <div style={{ color: "#7A5A00", flexShrink: 0, marginTop: 1 }}><Icon.warn /></div>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 14, color: "#7A5A00", marginBottom: 4 }}>Wichtiger Hinweis</div>
-              <div style={{ fontSize: 13, lineHeight: "18px", color: C.ink }}>
-                Diese Informationen ersetzen keine ärztliche Diagnose oder Behandlung.
-                Suchen Sie bei einer Verschlechterung Ihrer Beschwerden bitte umgehend
-                Ihren behandelnden Arzt auf. In akuten medizinischen Notfällen wählen
-                Sie bitte sofort den Notruf <strong>112</strong>.
-              </div>
-            </div>
-          </div>
-        </div>
-        <div style={{ padding: "16px 24px 44px", background: C.white }}>
-          <PrimaryBtn onClick={onDismiss}>Verstanden</PrimaryBtn>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Search screen ─────────────────────────────────────────────────────────
-function SearchScreen({ history, onPick, onClearHistory }) {
-  const [q, setQ] = useState("");
-  const all = window.SYMPTOMS;
-
-  const matches = useMemo(() => {
-    const term = q.trim().toLowerCase();
-    if (!term) return null;
-    return all.filter((s) => s.name.toLowerCase().includes(term) || s.aliases.some((a) => a.includes(term)));
-  }, [q]);
-
-  const historyMatches = useMemo(() => {
-    const term = q.trim().toLowerCase();
-    if (!term || history.length === 0) return [];
-    return history
-      .map((id) => all.find((s) => s.id === id))
-      .filter(Boolean)
-      .filter((s) => s.name.toLowerCase().includes(term) || s.aliases.some((a) => a.includes(term)));
-  }, [q, history]);
-
-  const suggested = useMemo(() => {
-    const ids = new Set(history.slice(0, 3));
-    const recent = all.filter((s) => ids.has(s.id));
-    const rest = all.filter((s) => s.suggested && !ids.has(s.id));
-    return [...recent, ...rest].slice(0, 3);
-  }, [history]);
-
-  const general = useMemo(() => all.filter((s) => !suggested.find((x) => x.id === s.id)), [suggested]);
-
-  return (
-    <div style={{ padding: "20px 0 32px" }}>
-      <div style={{ padding: "0 24px" }}>
-        <h2 style={{ margin: "0 0 20px", fontSize: 20, lineHeight: "28px", fontWeight: 700, color: C.ink, letterSpacing: "-0.01em" }}>
-          Bei welchen Nebenwirkungen<br />benötigen Sie Hilfe?
-        </h2>
-        <div style={{
-          display: "flex", alignItems: "center", gap: 12,
-          height: 44, padding: "0 14px", borderRadius: 40,
-          background: C.white, border: `1px solid ${C.primarySoft}`,
-          boxShadow: q ? "0 0 0 3px rgba(255,195,219,0.35)" : "none",
-          transition: "box-shadow 160ms"
-        }}>
-          <div style={{ display: "flex" }}><Icon.search /></div>
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Symptom eingeben"
-            style={{ flex: 1, border: "none", outline: "none", background: "transparent", fontFamily: FONT, fontSize: 14, color: C.ink }}
-          />
-          {q && (
-            <button onClick={() => setQ("")} aria-label="Leeren" style={{ ...iconBtnStyle, width: 24, height: 24 }}>
-              <Icon.close style={{ color: C.coolGray, width: 16, height: 16 }} />
-            </button>
-          )}
-        </div>
-      </div>
-
-      {matches ? (
-        <>
-          {historyMatches.length > 0 && (
-            <div style={{ marginTop: 28, padding: "0 24px" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: 12, color: C.ink, textTransform: "uppercase", letterSpacing: "0.04em" }}>Suchverlauf</div>
-                <button onClick={onClearHistory} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: FONT, fontSize: 13, fontWeight: 600, color: C.primary, padding: "0 2px" }}>
-                  Alle löschen
-                </button>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                {historyMatches.map((s) => (
-                  <button key={s.id} onClick={() => onPick(s.id)} style={{
-                    all: "unset", cursor: "pointer", boxSizing: "border-box",
-                    width: "100%", padding: "11px 4px",
-                    display: "flex", alignItems: "center", gap: 12,
-                    borderBottom: "1px solid rgba(0,0,0,0.05)",
-                  }}>
-                    <div style={{ color: C.coolGray, display: "flex", flexShrink: 0 }}><Icon.clock /></div>
-                    <div style={{ flex: 1, fontFamily: FONT, fontSize: 14, lineHeight: "20px", color: C.navy }}>{s.name}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-          <Section title={matches.length ? `Suchergebnisse (${String(matches.length).padStart(2, "0")})` : "Keine Treffer"}>
-          {matches.length === 0
-            ? <div style={{ padding: "20px 16px", color: C.midGray, fontSize: 14, lineHeight: "20px", background: C.pinkBgSoft, borderRadius: 12, border: `1px solid ${C.pinkBorderSoft}` }}>
-                Für „{q}" haben wir nichts gefunden. Versuchen Sie es mit einem anderen Begriff, z.&nbsp;B. „Erschöpfung" oder „Übelkeit".
-              </div>
-            : matches.map((s) => <SymptomRow key={s.id} symptom={s} onPick={() => onPick(s.id)} />)
-          }
-        </Section>
-        </>
-      ) : (
-        <>
-          <Section title="Vorschläge für Sie">
-            {suggested.map((s) => <SymptomRow key={s.id} symptom={s} onPick={() => onPick(s.id)} accent />)}
-          </Section>
-          <Section title="Allgemein">
-            {general.map((s) => <SymptomRow key={s.id} symptom={s} onPick={() => onPick(s.id)} compact />)}
-          </Section>
-        </>
-      )}
-    </div>
-  );
-}
-
-function Section({ title, children }) {
-  return (
-    <div style={{ marginTop: 28, padding: "0 24px" }}>
-      <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: 12, lineHeight: "20px", color: C.ink, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 8 }}>{title}</div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>{children}</div>
-    </div>
-  );
-}
-
-function SymptomRow({ symptom, onPick, accent, compact }) {
-  return (
-    <button onClick={onPick} style={{
-      all: "unset", cursor: "pointer", boxSizing: "border-box",
-      width: "100%", padding: compact ? "14px 16px" : "16px",
-      borderRadius: 12,
-      background: accent ? C.pinkBgSoft : C.white,
-      border: `1px solid ${accent ? C.pinkBorder : C.pinkBorderSoft}`,
-      display: "flex", alignItems: "center", gap: 12,
-      transition: "background 160ms, transform 120ms", WebkitTapHighlightColor: "transparent"
-    }}
-    onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.99)")}
-    onMouseUp={(e) => (e.currentTarget.style.transform = "")}
-    onMouseLeave={(e) => (e.currentTarget.style.transform = "")}>
-      <div style={{ flex: 1, fontFamily: FONT, fontSize: 14, lineHeight: "20px", color: C.navy, fontWeight: accent ? 600 : 400 }}>{symptom.name}</div>
-      <div style={{ color: C.coolGray, display: "flex" }}><Icon.chevron /></div>
-    </button>
-  );
-}
-
-// ── Survey screen ─────────────────────────────────────────────────────────
-function SurveyScreen({ symptom, step, answers, onAnswer, onContinue }) {
-  const q = symptom.questions[step];
-  const total = symptom.questions.length;
-  const selected = answers[step];
-  return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <div style={{ flex: 1, overflow: "auto", padding: "24px 24px" }}>
-        <ProgressDots total={total} current={step} />
-        <div style={{ marginTop: 20 }}>
-          <div style={{ fontFamily: FONT, fontSize: 13, lineHeight: "20px", color: C.midGray, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-            Frage {step + 1} von {total}
-          </div>
-          <h2 style={{ margin: "8px 0 0", fontSize: 22, lineHeight: "30px", fontWeight: 700, color: C.ink, letterSpacing: "-0.01em" }}>
-            {q.q}
-          </h2>
-        </div>
-        <div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 12 }}>
-          {q.options.map((opt) => (
-            <RadioCard key={opt.key} opt={opt} selected={selected === opt.key} onPick={() => onAnswer(opt.key)} />
-          ))}
-        </div>
-      </div>
-      <div style={{ flexShrink: 0, background: C.white, padding: "16px 24px 34px", boxShadow: "0 -4px 24px rgba(0,16,51,0.06)" }}>
-        <PrimaryBtn disabled={!selected} onClick={onContinue}>
-          {step === total - 1 ? "Tipps anzeigen" : "Weiter"}
-        </PrimaryBtn>
-      </div>
-    </div>
-  );
-}
-
-function ProgressDots({ total, current }) {
-  return (
-    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-      {Array.from({ length: total }).map((_, i) => (
-        <div key={i} style={{
-          height: 4, flex: 1, borderRadius: 100,
-          background: i <= current ? C.primary : C.pinkBorder,
-          transition: "background 200ms"
-        }} />
-      ))}
-    </div>
-  );
-}
-
-function RadioCard({ opt, selected, onPick }) {
-  return (
-    <button onClick={onPick} style={{
-      all: "unset", cursor: "pointer", boxSizing: "border-box", width: "100%",
-      padding: "16px 16px 16px 18px", borderRadius: 14,
-      background: selected ? C.pinkBgSoft : C.white,
-      border: `1.5px solid ${selected ? C.primary : C.pinkBorder}`,
-      display: "flex", gap: 14, alignItems: "flex-start",
-      transition: "all 160ms", WebkitTapHighlightColor: "transparent"
-    }}>
-      <div style={{
-        marginTop: 3, flexShrink: 0, width: 20, height: 20, borderRadius: 100,
-        border: `2px solid ${selected ? C.primary : C.coolGray}`,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        background: selected ? C.primary : "transparent", transition: "all 160ms"
-      }}>
-        {selected && <div style={{ width: 8, height: 8, borderRadius: 100, background: C.white }} />}
-      </div>
-      <div style={{ flex: 1 }}>
-        <div style={{ fontFamily: FONT, fontSize: 15, lineHeight: "22px", fontWeight: 700, color: selected ? C.primary : C.ink, transition: "color 160ms" }}>
-          {opt.label}
-        </div>
-        <div style={{ marginTop: 2, fontFamily: FONT, fontSize: 14, lineHeight: "20px", color: selected ? C.navy : C.midGray }}>
-          {opt.desc}
-        </div>
-      </div>
-    </button>
-  );
-}
-
-// ── Result screen ─────────────────────────────────────────────────────────
-const TAG_ICON = {
-  "Mini-Lektion": Icon.book, "Atemübung": Icon.yoga, "Bewegung": Icon.yoga,
-  "Übung": Icon.yoga, "Entspannung": Icon.yoga, "Audio": Icon.play,
-  "Rezept": Icon.bowl, "Routine": Icon.check, "Checkliste": Icon.check
-};
-const TAG_TINT = {
-  "Mini-Lektion": "#FFE5EF", "Atemübung": "#E6F2EC", "Bewegung": "#E6F2EC",
-  "Übung": "#E6F2EC", "Entspannung": "#E6F2EC", "Audio": "#E8E5FF",
-  "Rezept": "#FFF0DC", "Routine": "#EAF1FF", "Checkliste": "#EAF1FF"
-};
-
-function ResultScreen({ symptom, answers, history, repeatVisitTs, onRestart, onEdit, onPick }) {
-  const r = symptom.result;
-  const ctx = r.contextLabel({ a: answers });
-  const sections = typeof r.sections === 'function' ? r.sections({ a: answers }) : r.sections;
-  const recent = useMemo(
-    () => history.filter((id) => id !== symptom.id).map((id) => window.SYMPTOMS.find((s) => s.id === id)).filter(Boolean).slice(0, 3),
-    [history, symptom.id]
-  );
-  const poss = window._poss ? window._poss(symptom.id) : 'Ihre';
-  const when = repeatVisitTs ? (() => {
-    const d = Math.floor((Date.now() - repeatVisitTs) / 86400000);
-    return d === 0 ? "heute" : d === 1 ? "gestern" : "vor " + d + " Tagen";
-  })() : null;
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <div style={{ flex: 1, overflow: "auto" }}>
-      <div style={{ padding: "20px 24px 16px" }}>
-        <h2 style={{ margin: 0, fontSize: 22, lineHeight: "30px", fontWeight: 700, color: C.ink, letterSpacing: "-0.01em" }}>{symptom.name}</h2>
-        <div style={{ marginTop: 4, fontFamily: FONT, fontSize: 13, lineHeight: "18px", color: C.midGray }}>{ctx}</div>
-      </div>
-      <div style={{ padding: "0 24px", display: "flex", flexDirection: "column", gap: 16 }}>
-        <p style={{ margin: 0, fontFamily: FONT, fontSize: 15, lineHeight: "23px", color: C.ink }}>{r.summary}</p>
-
-        {when && (
-          <div style={{ padding: 16, borderRadius: 14, background: C.pinkBgSoft, border: `1px solid ${C.pinkBorder}` }}>
-            <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: 15, lineHeight: "20px", color: C.primary, marginBottom: 6 }}>
-              Hält {poss} {symptom.name} an?
-            </div>
-            <div style={{ fontFamily: FONT, fontSize: 14, lineHeight: "21px", color: C.ink }}>
-              Sie haben sich {when} schon wegen {symptom.name} informiert. Wenn Ihr Symptom anhält, könnte es sinnvoll sein, mit Ihrem Arzt darüber zu sprechen.
-            </div>
-          </div>
-        )}
-
-        {sections.map((sec, i) => {
-          const isWarn = i === sections.length - 1;
-          return isWarn ? (
-            <div key={i} style={{ padding: 16, borderRadius: 14, background: C.warnBgSoft, border: `1px solid #F4DD8A` }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                <div style={{ color: "#7A5A00", display: "flex" }}><Icon.warn style={{ width: 18, height: 18 }}/></div>
-                <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: 15, lineHeight: "20px", color: "#7A5A00" }}>{sec.heading}</div>
-              </div>
-              <div style={{ fontFamily: FONT, fontSize: 14, lineHeight: "21px", color: C.ink }}>{sec.body}</div>
-            </div>
-          ) : (
-            <div key={i}>
-              <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: 15, lineHeight: "20px", color: C.ink, marginBottom: 6 }}>{sec.heading}</div>
-              <div style={{ fontFamily: FONT, fontSize: 14, lineHeight: "21px", color: C.ink }}>{sec.body}</div>
-            </div>
-          );
-        })}
-
-        <div style={{ marginTop: 16 }}>
-          <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: 12, lineHeight: "20px", color: C.ink, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 8 }}>Empfohlen für Sie</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {r.suggested.map((item, i) => <SuggestedCard key={i} item={item} />)}
-          </div>
-        </div>
-
-        {recent.length > 0 && (
-          <div style={{ marginTop: 16 }}>
-            <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: 12, lineHeight: "20px", color: C.midGray, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 8 }}>Vorherige Suche</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {recent.map((s) => <SymptomRow key={s.id} symptom={s} onPick={() => onPick(s.id)} />)}
-            </div>
-          </div>
-        )}
-      </div>
-      <div style={{ height: 24 }} />
-      </div>
-
-      <div style={{
-        flexShrink: 0,
-        background: C.white, padding: "16px 24px 34px",
-        boxShadow: "0 -4px 24px rgba(0,16,51,0.06)",
-        display: "flex", flexDirection: "column", gap: 4
-      }}>
-        <PrimaryBtn onClick={onRestart}>Weiteres Symptom suchen</PrimaryBtn>
-        <GhostBtn onClick={onEdit} icon={<Icon.edit />}>Antwort ändern</GhostBtn>
-      </div>
-    </div>
-  );
-}
-
-function SuggestedCard({ item }) {
-  const TIcon = TAG_ICON[item.tag] || Icon.book;
-  const tint = TAG_TINT[item.tag] || C.pinkBgSoft;
-  return (
-    <div style={{
-      padding: 8, borderRadius: 12,
-      background: C.pinkBgSoft, border: `1px solid ${C.pinkBorderSoft}`,
-      display: "flex", alignItems: "center", gap: 12,
-      cursor: "pointer", transition: "transform 120ms", WebkitTapHighlightColor: "transparent"
-    }}
-    onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.99)")}
-    onMouseUp={(e) => (e.currentTarget.style.transform = "")}
-    onMouseLeave={(e) => (e.currentTarget.style.transform = "")}>
-      <div style={{ width: 64, height: 64, borderRadius: 10, flexShrink: 0, background: tint, color: C.primary, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ transform: "scale(1.6)" }}><TIcon /></div>
-      </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontFamily: FONT, fontSize: 11, fontWeight: 700, lineHeight: "14px", color: C.primary, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 2 }}>
-          {item.tag} · {item.minutes} Min.
-        </div>
-        <div style={{ fontFamily: FONT, fontSize: 14, lineHeight: "19px", color: C.ink, fontWeight: 600 }}>{item.title}</div>
-      </div>
-      <div style={{ color: C.coolGray, display: "flex", flexShrink: 0, marginRight: 4 }}><Icon.chevron /></div>
-    </div>
-  );
-}
-
-function useMobile() {
-  const [mobile, setMobile] = useState(() => window.innerWidth <= 520);
-  useEffect(() => {
-    const h = () => setMobile(window.innerWidth <= 520);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
-  }, []);
-  return mobile;
-}
-
-function useDeviceScale() {
-  const compute = () => Math.min(1, (window.innerHeight - 64) / 874);
-  const [scale, setScale] = useState(compute);
-  useEffect(() => {
-    const h = () => setScale(compute());
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
-  }, []);
-  return scale;
-}
-
-// ── Root app ──────────────────────────────────────────────────────────────
-const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{ "showIntro": true, "primary": "#BF0058", "accent": "#FF3686" }/*EDITMODE-END*/;
-const STORAGE_KEY = "symptom-kompass:v1";
-
-function loadState() {
-  try { const raw = localStorage.getItem(STORAGE_KEY); if (!raw) return null; return JSON.parse(raw); } catch { return null; }
-}
-function saveState(s) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch {}
-}
-
-function App() {
-  const [tweaks, setTweak] = window.useTweaks(TWEAK_DEFAULTS);
-  const initial = loadState();
-  const [screen, setScreen] = useState(initial?.screen || (tweaks.showIntro ? "intro" : "search"));
-  const [activeId, setActiveId] = useState(initial?.activeId || null);
-  const [step, setStep] = useState(initial?.step || 0);
-  const [answers, setAnswers] = useState(initial?.answers || []);
-  const [history, setHistory] = useState(initial?.history || []);
-  const [historyTimestamps, setHistoryTimestamps] = useState(initial?.historyTimestamps || {});
-  const [repeatVisitTs, setRepeatVisitTs] = useState(null);
-
-  useEffect(() => { saveState({ screen, activeId, step, answers, history, historyTimestamps }); }, [screen, activeId, step, answers, history, historyTimestamps]);
-
-  useEffect(() => {
-    C.primary = tweaks.primary || "#BF0058";
-    C.primaryHot = tweaks.accent || "#FF3686";
-  }, [tweaks.primary, tweaks.accent]);
-
-  const symptom = activeId ? window.SYMPTOMS.find((s) => s.id === activeId) : null;
-
-  function goToSearch() { setScreen("search"); setActiveId(null); setStep(0); setAnswers([]); }
-  function pickSymptom(id) { setRepeatVisitTs(historyTimestamps[id] || null); setActiveId(id); setStep(0); setAnswers([]); setScreen("survey"); }
-  function answerCurrent(key) { const next = [...answers]; next[step] = key; setAnswers(next); }
-  function continueSurvey() {
-    if (step < symptom.questions.length - 1) { setStep(step + 1); }
-    else {
-      setHistoryTimestamps(prev => ({ ...prev, [symptom.id]: Date.now() }));
-      const newHist = [symptom.id, ...history.filter((id) => id !== symptom.id)].slice(0, 6);
-      setHistory(newHist);
-      setScreen("result");
-    }
-  }
-  function backFromSurvey() { if (step > 0) setStep(step - 1); else goToSearch(); }
-  function editAnswers() { setStep(0); setScreen("survey"); }
-
-  const isMobile = useMobile();
-  const deviceScale = useDeviceScale();
-  const appBar = (
-    <AppBar
-      title="Symptom-Kompass"
-      onBack={screen === "survey" ? backFromSurvey : screen === "result" ? goToSearch : null}
-      onClose={() => goToSearch()}
-    />
-  );
-  const screens = (
-    <>
-      {(screen === "search" || screen === "intro") && <SearchScreen history={history} onPick={pickSymptom} onClearHistory={() => setHistory([])} />}
-      {screen === "survey" && symptom && (
-        <SurveyScreen
-          key={`${symptom.id}-${step}`}
-          symptom={symptom}
-          step={step}
-          answers={answers}
-          onAnswer={answerCurrent}
-          onContinue={continueSurvey}
-        />
-      )}
-      {screen === "result" && symptom && (
-        <ResultScreen
-          symptom={symptom}
-          answers={answers}
-          history={history}
-          repeatVisitTs={repeatVisitTs}
-          onRestart={goToSearch}
-          onEdit={editAnswers}
-          onPick={pickSymptom}
-        />
-      )}
-    </>
-  );
-
-  return (
-    <div style={{ width: isMobile ? "100%" : 402, position: "relative", fontFamily: FONT, color: C.ink }}>
-      {isMobile ? (
-        <div style={{ background: C.white, display: "flex", flexDirection: "column", height: "100dvh" }}>
-          {appBar}
-          <div style={{ flex: 1, overflow: screen === "survey" || screen === "result" ? "hidden" : "auto", minHeight: 0 }}>{screens}</div>
-          {screen === "intro" && <IntroSheet onDismiss={() => setScreen("search")} />}
-        </div>
-      ) : (
-        <div style={{ width: 402, height: 874 * deviceScale, position: "relative" }}>
-          <div style={{ position: "absolute", top: 0, left: 0, width: 402, height: 874, transform: `scale(${deviceScale})`, transformOrigin: "top center" }}>
-            <IOSDevice width={402} height={874}>
-              <div style={{ position: "relative", width: "100%", height: "100%", background: C.white, display: "flex", flexDirection: "column" }}>
-                <div style={{ paddingTop: 62 }}>{appBar}</div>
-                <div style={{ flex: 1, overflow: screen === "survey" || screen === "result" ? "hidden" : "auto", paddingBottom: 0 }}>{screens}</div>
-                {screen === "intro" && <IntroSheet onDismiss={() => setScreen("search")} />}
-              </div>
-            </IOSDevice>
-          </div>
-        </div>
-      )}
-
-      {window.TweaksPanel && (
-        <window.TweaksPanel title="Tweaks">
-          <window.TweakSection title="Erlebnis">
-            <window.TweakToggle
-              label="Intro-Modal beim Start zeigen"
-              value={tweaks.showIntro}
-              onChange={(v) => { setTweak("showIntro", v); if (v) setScreen("intro"); }}
-            />
-            <window.TweakButton onClick={() => { localStorage.removeItem(STORAGE_KEY); setHistory([]); goToSearch(); }}>
-              Verlauf zurücksetzen
-            </window.TweakButton>
-          </window.TweakSection>
-          <window.TweakSection title="Sprung in den Flow">
-            <window.TweakButton onClick={() => setScreen("intro")}>Intro-Modal</window.TweakButton>
-            <window.TweakButton onClick={goToSearch}>Suche</window.TweakButton>
-            <window.TweakButton onClick={() => pickSymptom("erschoepfung")}>Survey · Erschöpfung</window.TweakButton>
-            <window.TweakButton onClick={() => { setActiveId("erschoepfung"); setAnswers(["moderate", "chemo_cdk"]); setHistoryTimestamps(p => ({ ...p, erschoepfung: Date.now() })); setHistory((h) => ["erschoepfung", ...h.filter((x) => x !== "erschoepfung")].slice(0, 6)); setScreen("result"); }}>
-              Ergebnis · Erschöpfung
-            </window.TweakButton>
-            <window.TweakButton onClick={() => pickSymptom("uebelkeit")}>Survey · Übelkeit</window.TweakButton>
-            <window.TweakButton onClick={() => { setActiveId("uebelkeit"); setAnswers(["moderate", "chemo"]); setHistoryTimestamps(p => ({ ...p, uebelkeit: Date.now() })); setHistory((h) => ["uebelkeit", ...h.filter((x) => x !== "uebelkeit")].slice(0, 6)); setScreen("result"); }}>
-              Ergebnis · Übelkeit
-            </window.TweakButton>
-          </window.TweakSection>
-          <window.TweakSection title="Farben">
-            <window.TweakColor
-              label="Primärfarbe"
-              value={tweaks.primary}
-              onChange={(v) => setTweak("primary", v)}
-              options={["#BF0058", "#0050FF", "#1F8A5B", "#5A2BBA"]}
-            />
-            <window.TweakColor
-              label="Akzentfarbe"
-              value={tweaks.accent}
-              onChange={(v) => setTweak("accent", v)}
-              options={["#FF3686", "#FF7A00", "#00B8A9", "#7C5CFF"]}
-            />
-          </window.TweakSection>
-        </window.TweaksPanel>
-      )}
-    </div>
-  );
-}
-
-window.App = App;
-</script>
-
-<!-- ── bootstrap ─────────────────────────────────────────────────────────── -->
-<script type="text/babel">
-  setTimeout(() => {
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<window.App />);
-  }, 50);
-</script>
 </body>
 </html>
